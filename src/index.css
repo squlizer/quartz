@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .liquid-glass {
+    @apply bg-white/20 backdrop-blur-[40px] border border-white/20 shadow-xl ring-1 ring-white/10;
+  }
+  .liquid-glass-dark {
+    @apply bg-black/40 backdrop-blur-[40px] border border-white/5 shadow-xl;
+  }
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  user-select: none;
+  background: linear-gradient(135deg, #1c1c1e 0%, #000000 100%);
+  height: 100dvh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed; /* Lock body in place */
+  inset: 0;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  max-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
