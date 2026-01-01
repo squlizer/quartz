@@ -43,11 +43,13 @@ const CalculatorApp = () => {
   };
 
   const handleAction = (action) => {
-    if (action === 'AC') {
+    if (action === 'AC' || action === 'C') {
       setDisplay('0');
-      setPreviousValue(null);
-      setOperator(null);
-      setWaitingForOperand(false);
+      if (action === 'AC') {
+        setPreviousValue(null);
+        setOperator(null);
+        setWaitingForOperand(false);
+      }
     } else if (action === '±') {
       setDisplay(String(parseFloat(display) * -1));
     } else if (action === '%') {
@@ -68,7 +70,7 @@ const CalculatorApp = () => {
   };
 
   const buttons = [
-    { label: display === '0' && !previousValue ? 'AC' : 'C', type: 'action', color: 'bg-[#A5A5A5] text-black' },
+    { label: display === '0' && previousValue === null ? 'AC' : 'C', type: 'action', color: 'bg-[#A5A5A5] text-black' },
     { label: '±', type: 'action', color: 'bg-[#A5A5A5] text-black' },
     { label: '%', type: 'action', color: 'bg-[#A5A5A5] text-black' },
     { label: '÷', type: 'operator', color: 'bg-[#FF9F0A] text-white' },
@@ -92,7 +94,7 @@ const CalculatorApp = () => {
   return (
     <div className="w-full h-full bg-black flex flex-col justify-end p-5 pb-10">
       <div className="flex-1 flex items-end justify-end px-4 mb-6">
-        <motion.span 
+        <motion.span
           key={display}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

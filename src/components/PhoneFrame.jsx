@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 
-const PhoneFrame = ({ children, onLock, onActionButton }) => {
+const PhoneFrame = ({ children, onLock, onActionButton, onVolumeUp, onVolumeDown }) => {
   return (
     <div className="relative flex items-center justify-center p-4 h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
       {/* Phone Body - Premium Titanium Design */}
@@ -45,24 +45,37 @@ const PhoneFrame = ({ children, onLock, onActionButton }) => {
           onClick={onLock}
         />
 
+        {/* Camera Control (Intelligence) Button - Bottom Right */}
+        <div
+          className="absolute top-[350px] -right-[4px] w-[4px] h-20 rounded-r-sm cursor-pointer z-50 transition-all duration-150 hover:brightness-125 active:brightness-75"
+          style={{
+            background: 'linear-gradient(90deg, #2a2a2c 0%, #4a4a4d 50%, #3a3a3c 100%)',
+            boxShadow: '1px 0 2px rgba(0,0,0,0.5), inset -1px 0 1px rgba(255,255,255,0.1)'
+          }}
+          onClick={() => onActionButton && onActionButton('intelligence')}
+          title="Apple Intelligence"
+        />
+
 
 
         {/* Volume Up */}
         <div
-          className="absolute top-36 -left-[4px] w-[4px] h-14 rounded-l-sm"
+          className="absolute top-36 -left-[4px] w-[4px] h-14 rounded-l-sm cursor-pointer z-50 transition-all duration-150 hover:brightness-125 active:brightness-75"
           style={{
             background: 'linear-gradient(270deg, #2a2a2c 0%, #4a4a4d 50%, #3a3a3c 100%)',
             boxShadow: '-1px 0 2px rgba(0,0,0,0.5), inset 1px 0 1px rgba(255,255,255,0.1)'
           }}
+          onClick={onVolumeUp}
         />
 
         {/* Volume Down */}
         <div
-          className="absolute top-52 -left-[4px] w-[4px] h-14 rounded-l-sm"
+          className="absolute top-52 -left-[4px] w-[4px] h-14 rounded-l-sm cursor-pointer z-50 transition-all duration-150 hover:brightness-125 active:brightness-75"
           style={{
             background: 'linear-gradient(270deg, #2a2a2c 0%, #4a4a4d 50%, #3a3a3c 100%)',
             boxShadow: '-1px 0 2px rgba(0,0,0,0.5), inset 1px 0 1px rgba(255,255,255,0.1)'
           }}
+          onClick={onVolumeDown}
         />
 
         {/* Action Button (Left side) */}

@@ -13,6 +13,8 @@ const apps = [
   { id: 'notes', name: 'Notes', iconUrl: `${BASE_URL}/files.png` },
   { id: 'settings', name: 'Settings', iconUrl: `${BASE_URL}/settings.png` },
   { id: 'calculator', name: 'Calculator', iconUrl: `${BASE_URL}/calculator.png` },
+  { id: 'discord', name: 'Discord', iconUrl: 'https://img.utdstc.com/icon/c13/2b2/c132b2c5490358ecc70986050d521dfbcf13d983fd2b21ca12b77db70c719738:200' },
+  { id: 'appstore', name: 'App Store', iconUrl: 'https://images.seeklogo.com/logo-png/40/3/app-store-icon-logo-png_seeklogo-401465.png' },
 ];
 
 const dockApps = [

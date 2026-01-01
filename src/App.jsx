@@ -15,6 +15,10 @@ import PhotosApp from './components/apps/PhotosApp';
 import NotesApp from './components/apps/NotesApp';
 import PhoneApp from './components/apps/PhoneApp';
 import MessagesApp from './components/apps/MessagesApp';
+import DevelopmentWarning from './components/DevelopmentWarning';
+import VolumeHUD from './components/VolumeHUD';
+import DiscordApp from './components/apps/DiscordApp';
+import AppStoreApp from './components/apps/AppStoreApp';
 
 import { playSound } from './hooks/useSoundEffects';
 import { MusicProvider, useMusic } from './context/musicContext.jsx';
@@ -30,9 +34,10 @@ const MusicApp = ({ onClose }) => {
           <ChevronLeft size={24} /> Back
         </button>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
+
+      <div className="flex-1 flex flex-col items-center justify-start gap-4 p-6 pt-2">
         <motion.div
-          className="w-56 h-56 rounded-3xl overflow-hidden shadow-2xl"
+          className="w-56 h-56 rounded-3xl overflow-hidden shadow-2xl mt-4"
           animate={{ rotate: isPlaying ? 360 : 0 }}
           transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
           style={{ animationPlayState: isPlaying ? 'running' : 'paused' }}
@@ -47,21 +52,19 @@ const MusicApp = ({ onClose }) => {
             }}
           />
         </motion.div>
-        <div className="text-center">
+        <div className="text-center mt-2">
           <h1 className="text-2xl font-bold text-white">{currentTrack.title}</h1>
           <p className="text-gray-400 text-lg">{currentTrack.artist}</p>
-          <p className="text-gray-500 text-sm mt-1">{currentTrack.genre} • {currentTrack.duration}</p>
         </div>
 
-        {/* Progress bar - synced */}
-        <div className="w-full max-w-xs h-1 bg-white/20 rounded-full overflow-hidden">
+        <div className="w-full max-w-xs h-1 bg-white/20 rounded-full overflow-hidden mt-2">
           <div
             className="h-full bg-white/80 rounded-full transition-all"
             style={{ width: `${progress}%` }}
           />
         </div>
 
-        <div className="flex gap-10 mt-4 items-center">
+        <div className="flex gap-10 mt-6 items-center">
           <button
             onClick={prevTrack}
             className="text-white/40 hover:text-white transition active:scale-90"
@@ -87,7 +90,7 @@ const MusicApp = ({ onClose }) => {
         </div>
 
         {/* Track list */}
-        <div className="w-full mt-4 space-y-2 max-h-32 overflow-y-auto">
+        <div className="w-full mt-auto space-y-2 h-40 overflow-y-auto pr-1">
           {tracks.map((track, index) => (
             <button
               key={track.id}
@@ -96,9 +99,9 @@ const MusicApp = ({ onClose }) => {
                 }`}
             >
               <img src={track.coverUrl} alt="" className="w-10 h-10 rounded-lg object-cover" />
-              <div className="text-left flex-1">
+              <div className="text-left flex-1 min-w-0">
                 <p className="text-white text-sm font-medium truncate">{track.title}</p>
-                <p className="text-gray-500 text-xs">{track.artist}</p>
+                <p className="text-gray-500 text-xs truncate">{track.artist}</p>
               </div>
               {index === currentTrackIndex && isPlaying && (
                 <div className="flex gap-0.5">
@@ -116,14 +119,15 @@ const MusicApp = ({ onClose }) => {
 };
 
 function AppContent() {
+  const { increaseVolume, decreaseVolume, volume } = useMusic();
   const phoneScreenRef = useRef(null);
   const [isLocked, setIsLocked] = useState(true);
   const [openedApp, setOpenedApp] = useState(null);
-  const [overlay, setOverlay] = useState(null);
-
   const [isIslandExpanded, setIsIslandExpanded] = useState(false);
+  const [overlay, setOverlay] = useState(null);
   const [appIconPosition, setAppIconPosition] = useState({ x: 0, y: 0, width: 60, height: 60 });
   const [isAnimating, setIsAnimating] = useState(false);
+  const [currentWallpaper, setCurrentWallpaper] = useState('https://thinkapple.pl/wp-content/uploads/2025/06/iOS_26_tapeta-iphone-wallpaper-light-full-768x1665.jpg');
 
   const dragY = useMotionValue(0);
 
@@ -156,7 +160,11 @@ function AppContent() {
 
   const renderAppContent = (appId) => {
     switch (appId) {
-      case 'settings': return <SettingsApp onClose={closeApp} />;
+      case 'settings': return <SettingsApp
+        onClose={closeApp}
+        currentWallpaper={currentWallpaper}
+        onWallpaperChange={setCurrentWallpaper}
+      />;
       case 'calculator': return <CalculatorApp onClose={closeApp} />;
       case 'clock': return <ClockApp onClose={closeApp} />;
       case 'calendar': return <CalendarApp onClose={closeApp} />;
@@ -165,6 +173,8 @@ function AppContent() {
       case 'phone': return <PhoneApp onClose={closeApp} />;
       case 'messages': return <MessagesApp onClose={closeApp} />;
       case 'music': return <MusicApp onClose={closeApp} />;
+      case 'discord': return <DiscordApp onClose={closeApp} />;
+      case 'appstore': return <AppStoreApp onClose={closeApp} />;
       default: return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-white">
           <h1 className="text-2xl font-bold text-black mb-4 capitalize">{appId}</h1>
@@ -200,9 +210,9 @@ function AppContent() {
     setOverlay(prev => prev === 'notification-center' ? null : 'notification-center');
   };
 
-  const handleActionButton = () => {
+  const handleActionButton = (action) => {
     playSound('tick');
-    // Action button now free for other uses (e.g., Silent mode)
+    // AI action removed
   };
 
   const handleHomeClick = () => {
@@ -211,17 +221,23 @@ function AppContent() {
   };
 
   return (
-    <PhoneFrame onLock={handleLock} onActionButton={handleActionButton}>
+    <PhoneFrame
+      onLock={handleLock}
+      onActionButton={handleActionButton}
+      onVolumeUp={increaseVolume}
+      onVolumeDown={decreaseVolume}
+    >
       <div
         ref={phoneScreenRef}
         id="phone-screen"
         className="w-full h-full relative font-sans select-none overflow-hidden rounded-[48px] bg-black"
       >
         {/* Wallpaper Layer - Simplified animation */}
+        <VolumeHUD volume={volume} />
         <motion.div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('https://cdn.jsdelivr.net/gh/quandz24-ui/OriginOS_web@main/publicBeta/originos_data/wallpaper_3.png')",
+            backgroundImage: `url('${currentWallpaper}')`,
           }}
           animate={{
             scale: isLocked ? 1.15 : (openedApp ? 1.02 : 1.08),
@@ -252,7 +268,10 @@ function AppContent() {
         {/* Status Bar */}
         <StatusBar
           isDark={!!openedApp && !overlay && ['calculator', 'clock'].indexOf(openedApp) === -1}
+          isIslandExpanded={isIslandExpanded}
           onIslandChange={setIsIslandExpanded}
+          onNotificationTap={() => setOverlay('notifications')}
+          onControlCenterTap={() => setOverlay('control-center')}
         />
 
         {/* Main Content Area */}
@@ -266,18 +285,18 @@ function AppContent() {
             <motion.div
               className="absolute inset-0 pt-14 z-20"
               animate={{
-                scale: openedApp ? 0.85 : 1,
-                filter: openedApp ? 'blur(20px)' : 'blur(0px)',
-                opacity: openedApp ? 0 : 1
+                scale: openedApp ? 0.9 : 1,
+                filter: openedApp ? 'blur(10px)' : 'blur(0px)',
+                opacity: openedApp ? 0.3 : 1
               }}
-              transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+              transition={{ duration: 0.4 }}
               style={{ pointerEvents: openedApp ? 'none' : 'auto' }}
             >
               <HomeScreen key="home-screen" onAppClick={handleAppClick} />
             </motion.div>
           )}
 
-          {/* Opened App Layer - iOS 26 Liquid Glass Animation */}
+          {/* Opened App Layer - Standard iOS Zoom Animation */}
           <AnimatePresence
             onExitComplete={() => setIsAnimating(false)}
           >
@@ -286,7 +305,6 @@ function AppContent() {
                 key={`app-${openedApp}`}
                 className="absolute z-[300] overflow-hidden"
                 style={{
-                  y: dragY,
                   left: 0,
                   top: 0,
                   backgroundColor: ['calculator', 'clock'].includes(openedApp) ? '#000' : '#fff',
@@ -311,35 +329,20 @@ function AppContent() {
                 }}
                 exit={{
                   borderRadius: 24,
-                  width: appIconPosition.width * 1.5,
-                  height: appIconPosition.height * 1.5,
+                  width: appIconPosition.width,
+                  height: appIconPosition.height,
                   x: appIconPosition.x,
                   y: appIconPosition.y,
                   opacity: 0,
-                  scale: 0.5,
-                  transition: {
-                    type: "spring",
-                    stiffness: 425,
-                    damping: 40,
-                    mass: 0.8,
-                  }
-                }}
-                drag={isAnimating ? false : "y"}
-                dragConstraints={{ top: 0, bottom: 800 }}
-                dragElastic={0.15}
-                onDragEnd={(e, info) => {
-                  if (info.offset.y > 120 || info.velocity.y > 400) {
-                    animate(dragY, 0, { duration: 0 });
-                    closeApp();
-                  } else {
-                    animate(dragY, 0, { type: "spring", stiffness: 425, damping: 40 });
-                  }
+                  scale: 0.3,
+                  transition: { duration: 0.3 }
                 }}
                 transition={{
-                  type: "spring",
-                  stiffness: 340,
-                  damping: 40,
+                  type: 'spring',
+                  damping: 30,
+                  stiffness: 400,
                   mass: 0.8,
+                  opacity: { duration: 0.2 }
                 }}
                 onAnimationComplete={() => setIsAnimating(false)}
               >
@@ -354,13 +357,16 @@ function AppContent() {
           </AnimatePresence>
         </div>
 
-
-
-        {/* Home Indicator - Always clickable */}
+        {/* Home Indicator - Clean Standard Bar */}
         {!isLocked && (
           <motion.div
-            className="absolute bottom-0 left-0 right-0 h-10 z-[400] flex items-end justify-center pb-2 cursor-pointer"
+            className="absolute bottom-0 left-0 right-0 h-14 z-[400] flex items-end justify-center pb-4 cursor-pointer"
             onClick={handleHomeClick}
+            onPanEnd={(e, info) => {
+              if (info.offset.y < -30) {
+                handleHomeClick();
+              }
+            }}
             whileTap={{ scale: 0.95 }}
           >
             <div className="w-32 h-1.5 bg-white/50 backdrop-blur-md rounded-full shadow-lg" />
@@ -374,6 +380,7 @@ function AppContent() {
 function App() {
   return (
     <MusicProvider>
+      <DevelopmentWarning />
       <AppContent />
     </MusicProvider>
   );

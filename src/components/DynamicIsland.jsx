@@ -29,7 +29,7 @@ const DynamicIsland = ({ onExpandChange }) => {
     >
       <motion.div
         layout
-        className="bg-black/95 backdrop-blur-3xl rounded-[24px] flex items-center justify-center overflow-hidden cursor-pointer border border-white/10 shadow-2xl relative"
+        className="bg-black/95 backdrop-blur-xl rounded-[24px] flex items-center justify-center overflow-hidden cursor-pointer border border-white/10 shadow-2xl relative"
         initial={false}
         animate={{
           width: isExpanded ? 340 : 126,
@@ -38,9 +38,9 @@ const DynamicIsland = ({ onExpandChange }) => {
         }}
         transition={{
           type: "spring",
-          stiffness: 400,
-          damping: 30,
-          mass: 0.8
+          stiffness: 550,
+          damping: 28,
+          mass: 0.5
         }}
         onClick={() => setIsExpanded(!isExpanded)}
         onHoverStart={() => !isExpanded && setIsExpanded(true)}
